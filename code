@@ -95,20 +95,6 @@ void HashTable::insert(DataHolder data) {
     count += 1;
 }
 
-bool HashTable::search(DataHolder data) {
-    int index = hashFunction(data.getName());
-    while (table[index].getName() != data.getName()) {
-		index += 1;
-		if (index == size) { // if index is out of bounds, wrap around
-        	index = 0;
-        }
-		if (table[index].getName() == "" ) { // if table[index] is empty, key is not in table
-        	return false;
-        }
-	}
-    return table[index].getName() == data.getName();
-}
-
 void HashTable::printTop10() {
     // visit every element in the table
     DataHolder* top10 = new DataHolder[10];
