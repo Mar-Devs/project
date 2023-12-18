@@ -9,7 +9,7 @@
 using namespace std;
 
 class hash_map {
-	static const int size = 5;
+	static const int size = 2000;
 	vector<pair<string, int>> data[size];
 
 public:
