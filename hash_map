@@ -6,6 +6,7 @@
 #include<functional>
 #include<queue>
 #include<regex>
+#include<chrono>
 using namespace std;
 
 class hash_map {
@@ -16,7 +17,7 @@ public:
 	int hashing(int visits) {
 		return visits % size;
 	}
-	void insert(string file_name, int visits) {
+	void insert(int visits, string file_name) {
 		int hash_value = hashing(visits);
 		auto& checker = data[hash_value];
 		auto iterator = begin(checker);
@@ -31,5 +32,48 @@ public:
 		if (!exits) {
 			checker.emplace_back(file_name, visits);
 		}
+	}
+
+	void print() {
+		int counter = 0;
+		for (int i = 0; i < size && counter < 10; i++) {
+			if (!data[i].empty()) {
+				for (auto iterator = data[i].begin(); iterator != data[i].end() && counter < 10; iterator++) {
+					cout << "File Name: " << iterator->first << " Value: " << iterator->second << endl;
+					counter++;
+				}
+			}
+		}
+	}
+	};
+
+	int main() {
+		hash_map map;
+		ifstream file;
+		auto start = chrono::high_resolution_clock::now();
+		file.open("C:/Users/marah/Downloads/access_log/access_log");
+		if (file.is_open()) {
+			string line;
+			regex pattern(R"("GET\s(.*?)\sHTTP.*"\s(\d+))");
+			while (getline(file, line)) {
+				smatch data;
+				if (regex_search(line, data, pattern)) {
+					string name = data[1];
+					int visit = stoi(data[2].str());
+					map.insert(visit, name);
+				}
+			}
+
+			map.print();
+			file.close();
+		}
+
+		else {
+			cout << "Error opening file. Please check your path." << endl;
+		}
+		auto stop = chrono::high_resolution_clock::now();
+		auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+		cout << "Time taken by unordered map: " << duration.count() << " microseconds" << endl;
 
 	}
+
