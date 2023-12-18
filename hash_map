@@ -1,0 +1,35 @@
+#include<iostream>
+#include<string>
+#include<vector>
+#include<fstream>
+#include<algorithm>
+#include<functional>
+#include<queue>
+#include<regex>
+using namespace std;
+
+class hash_map {
+	static const int size = 5;
+	vector<pair<string, int>> data[size];
+
+public:
+	int hashing(int visits) {
+		return visits % size;
+	}
+	void insert(string file_name, int visits) {
+		int hash_value = hashing(visits);
+		auto& checker = data[hash_value];
+		auto iterator = begin(checker);
+		bool exits = false;
+		for (; iterator != end(checker); iterator++) {
+			if (iterator->first == file_name) {
+				exits = true;
+				iterator->second = visits;
+				break;
+			}
+		}
+		if (!exits) {
+			checker.emplace_back(file_name, visits);
+		}
+
+	}
