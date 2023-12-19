@@ -10,27 +10,32 @@
 using namespace std;
 
 class hash_map {
-	static const int size = 2000;
+	static const int size = 200;
 	vector<pair<string, int>> data[size];
 
 public:
-	int hashing(int visits) {
-		return visits % size;
+	int hashing(const string& file_name) {
+		int prime_num = 31; 
+		unsigned long hash_value = 0;
+		for (char filler : file_name) {
+			hash_value = (hash_value * prime_num + filler) % size;
+		}
+		return (hash_value + file_name.length()) % size;
 	}
 	void insert(string file_name) {
-		int hash_value = hashing(file_name.length()); // Change the hashing function to use the length of the file_name
+		int hash_value = hashing(file_name); 
 		auto& checker = data[hash_value];
 		auto iterator = begin(checker);
 		bool exists = false;
 		for (; iterator != end(checker); iterator++) {
 			if (iterator->first == file_name) {
 				exists = true;
-				iterator->second += 1;  // Increment the visit count
+				iterator->second += 1;
 				break;
 			}
 		}
 		if (!exists) {
-			checker.emplace_back(file_name, 1); // Start the count at 1
+			checker.emplace_back(file_name, 1);
 		}
 	}
 
@@ -66,7 +71,7 @@ int main() {
 			smatch data;
 			if (regex_search(line, data, pattern)) {
 				string name = data[1];
-				map.insert(name);  // Update this line
+				map.insert(name);  
 			}
 		}
 
