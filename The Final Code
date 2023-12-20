@@ -42,8 +42,8 @@ public:
 
 	void print() {
 		vector<pair<string, int>> result;
-		for (auto& bucket : data) {
-			for (auto& entry : bucket) {
+		for (auto& slots : data) {
+			for (auto& entry : slots) {
 				result.push_back(entry);
 			}
 		}
@@ -102,7 +102,7 @@ int main() {
 			}
 		}
 		file.close();
-		file.clear();               // to clear the slate from the last the file was opened, only way I could get both functions to print
+		file.clear();               // to clear the slate from the last time the file was opened, only way I could get both functions to print
 		file.seekg(0, ios::beg); 
 	}
 	else {
@@ -111,7 +111,7 @@ int main() {
 	auto stop_hash_map = chrono::high_resolution_clock::now();
 	auto duration_hash_map = chrono::duration_cast<chrono::microseconds>(stop_hash_map - start_hash_map);
 	map.print();
-	cout << "Time taken by hash map: " << duration_hash_map.count() << " microseconds" << endl;
+	cout << "Time taken by the hash map: " << duration_hash_map.count() << " microseconds" << endl;
 
 	// Timing for the unoredred map
 	auto start_the_map = chrono::high_resolution_clock::now();
