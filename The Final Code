@@ -1,138 +1,137 @@
-#include<iostream>
-#include<string>
-#include<vector>
-#include<fstream>
-#include<algorithm>
-#include<functional>
-#include<queue>
-#include<regex>
-#include<chrono>
-#include<unordered_map>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <fstream>
+#include <chrono>
+#include <unordered_map>
+#include <algorithm>
 using namespace std;
 
-class hash_map {
-	static const int size = 200;
-	vector<pair<string, int>> data[size];
+ class hash_map {
+    static const int size = 200;
+    vector<pair<string, int>> data[size];
 
 public:
-	int hashing(const string& file_name) {
-		int prime_num = 31;
-		unsigned long hash_value = 0;
-		for (char filler : file_name) {
-			hash_value = (hash_value * prime_num + filler) % size;
-		}
-		return (hash_value + file_name.length()) % size;
-	}
-	void insert(string file_name) {
-		int hash_value = hashing(file_name);
-		auto& checker = data[hash_value];
-		auto iterator = begin(checker);
-		bool exists = false;
-		for (; iterator != end(checker); iterator++) {
-			if (iterator->first == file_name) {
-				exists = true;
-				iterator->second += 1;
-				break;
-			}
-		}
-		if (!exists) {
-			checker.emplace_back(file_name, 1);
-		}
-	}
+    int hashing(const string& file_name) {
+        int prime_num = 31;
+        unsigned long hash_value = 0;
+        for (char index : file_name) {
+            hash_value = (hash_value * prime_num + index) % size;
+        }
+        return (hash_value + file_name.length()) % size;
+    }
 
-	void print() {
-		vector<pair<string, int>> result;
-		for (auto& slots : data) {
-			for (auto& entry : slots) {
-				result.push_back(entry);
-			}
-		}
-		sort(result.begin(), result.end(), [](const pair<string, int>& files, const pair<string, int>& visits) {
-			return files.second > visits.second;
-			});
+    void insert(string file_name) {
+        int hash_value = hashing(file_name);
+        auto& checker = data[hash_value];
+        auto iterator = begin(checker);
+        bool exists = false;
+        for (; iterator != end(checker); iterator++) {
+            if (iterator->first == file_name) {
+                exists = true;
+                iterator->second += 1;
+                break;
+            }
+        }
+        if (!exists) {
+            checker.emplace_back(file_name, 1);
+        }
+    }
 
-		for (int i = 0; i < 10 && i < result.size(); ++i) {
-			cout << "File Name:" << result[i].first << " Visit Count:" << result[i].second << endl;
-		}
-	}
-};
+    void print() {
+        vector<pair<string, int>> result;
+        for (auto& slots : data) {
+            for (auto& entry : slots) {
+                result.push_back(entry);
+            }
+        }
+        sort(result.begin(), result.end(), [](const pair<string, int>& files, const pair<string, int>& visits) {
+            return files.second > visits.second;
+            });
 
-class the_map {
+        for (int i = 0; i < 10 && i < result.size(); ++i) {
+            cout << "File Name:" << result[i].first << " Visit Count:" << result[i].second << endl;
+        }
+    }
+}; 
+
+ class the_map {
 private:
-	unordered_map<string, int> sacred_archive;
+    unordered_map<string, int> sacred_archive;
 
 public:
-	void unordered_map_insert(const string& websites) {
-		sacred_archive[websites]++;
+    void unordered_map_insert(const string& websites) {
+        sacred_archive[websites]++;
+    }
 
-	};
+    void print() {
+        vector<pair<string, int>> result(sacred_archive.begin(), sacred_archive.end());
+        sort(result.begin(), result.end(), [](const pair<string, int>& files, const pair<string, int>& visits) {
+            return files.second > visits.second;
+            });
 
-	void print() {
-		vector<pair<string, int>> result(sacred_archive.begin(), sacred_archive.end());
-		sort(result.begin(), result.end(), [](const pair<string, int>& files, const pair<string, int>& visits) {
-			return files.second > visits.second;
-			});
+        for (int i = 0; i < 10 && i < result.size(); ++i) {
+            cout << "File Name:" << result[i].first << " Visit Count:" << result[i].second << endl;
+        }
+    }
+}; 
 
-		for (int i = 0; i < 10 && i < result.size(); ++i) {
-			cout << "File Name:" << result[i].first << " Visit Count:" << result[i].second << endl;
-		}
-    };
-};
-
-
-
-
+string extract(const string& file_name) {
+    size_t start = file_name.find("\"GET ") + 5; 
+    if (start == string::npos) {
+        return "";
+    }
+    size_t end = file_name.find(" HTTP", start);
+    if (end == string::npos) {
+        return "";
+    }
+    return file_name.substr(start, end - start);
+}
 
 int main() {
-	ifstream file;
-	hash_map map;
-	the_map mappy;
+    ifstream file;
+    hash_map map;  
+   the_map mappy; 
 
-	// Timing for hash_map
-	auto start_hash_map = chrono::high_resolution_clock::now();
-	file.open("C:/Users/marah/Downloads/access_log/access_log");
-	if (file.is_open()) {
-		string line;
-		regex pattern(R"("GET\s(.*?)\sHTTP.*"\s(\d+))");
-		while (getline(file, line)) {
-			smatch data;
-			if (regex_search(line, data, pattern)) {
-				string name = data[1];
-				map.insert(name);
-			}
-		}
-		file.close();
-		file.clear();               // to clear the slate from the last time the file was opened, only way I could get both functions to print
-		file.seekg(0, ios::beg); 
-	}
-	else {
-		cout << "Error opening file. Please check your path." << endl;
-	}
-	auto stop_hash_map = chrono::high_resolution_clock::now();
-	auto duration_hash_map = chrono::duration_cast<chrono::microseconds>(stop_hash_map - start_hash_map);
-	map.print();
-	cout << "Time taken by the hash map: " << duration_hash_map.count() << " microseconds" << endl;
+     // Timing for hash_map
+    auto start_hash_map = chrono::high_resolution_clock::now();
+    file.open("C:/Users/marah/Downloads/access_log/access_log");
+    if (file.is_open()) {
+        string line;
+        while (getline(file, line)) {
+            string name = extract(line);
+            if (!name.empty()) {
+                map.insert(name);
+            }
+        }
+        file.close();
+    }
+    else {
+        cout << "Error opening file. Please check your path." << endl;
+    }
+    auto stop_hash_map = chrono::high_resolution_clock::now();
+    auto duration_hash_map = chrono::duration_cast<chrono::microseconds>(stop_hash_map - start_hash_map);
+    map.print();
+    cout << "Time taken by the hash map: " << duration_hash_map.count() << " microseconds" << endl; 
 
-	// Timing for the unoredred map
-	auto start_the_map = chrono::high_resolution_clock::now();
-	file.open("C:/Users/marah/Downloads/access_log/access_log");
-	if (file.is_open()) {
-		string line;
-		regex pattern(R"("GET\s(.*?)\sHTTP.*"\s(\d+))");
-		while (getline(file, line)) {
-			smatch data;
-			if (regex_search(line, data, pattern)) {
-				string name = data[1];
-				mappy.unordered_map_insert(name);
-			}
-		}
-		file.close();
-	}
-	else {
-		cout << "Error opening file. Please check your path." << endl;
-	}
-	auto stop_the_map = chrono::high_resolution_clock::now();
-	auto duration_the_map = chrono::duration_cast<chrono::microseconds>(stop_the_map - start_the_map);
-	mappy.print();
-	cout << "Time taken by the unordered map: " << duration_the_map.count() << " microseconds" << endl;
+    // Timing for the unordered map
+    auto start_the_map = chrono::high_resolution_clock::now();
+    file.open("C:/Users/marah/Downloads/access_log/access_log");
+    if (file.is_open()) {
+        string line;
+        while (getline(file, line)) {
+            string name = extract(line);
+            if (!name.empty()) {
+                mappy.unordered_map_insert(name);
+            }
+        }
+        file.close();
+    }
+    else {
+        cout << "Error opening file. Please check your path." << endl;
+    }
+    auto stop_the_map = chrono::high_resolution_clock::now();
+    auto duration_the_map = chrono::duration_cast<chrono::microseconds>(stop_the_map - start_the_map);
+    mappy.print();
+    cout << "Time taken by the unordered map: " << duration_the_map.count() << " microseconds" << endl; 
 }
